@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Investments</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@3.3.0"></script>
+</head>
+<body>
+  <header>
+    <h1>Investments</h1>
+  </header>
+  <main>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="buy">Buy</button>
+      <button class="tab-btn" data-tab="sell">Sell</button>
+    </div>
+    <section id="buy" class="tab-content active">
+      <input type="text" id="stockSearch" placeholder="Search for stocks...">
+      <div id="chartContainer">
+        <canvas id="candlestickChart"></canvas>
+      </div>
+      <div class="buy-inputs">
+        <input type="number" id="buyUnits" placeholder="Enter units">
+        <button id="buyBtn">Buy</button>
+      </div>
+    </section>
+    <section id="sell" class="tab-content">
+      <div id="ownedStocks"></div>
+    </section>
+  </main>
+  <script src="js/common.js"></script>
+  <script src="js/investments.js"></script>
+</body>
+</html>

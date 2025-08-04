@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Portfolio Dashboard</h1>
+  </header>
+  <main>
+    <div class="chart-section">
+      <h2>Stock Distribution by Units</h2>
+      <canvas id="unitsPie"></canvas>
+    </div>
+    <div class="chart-section">
+      <h2>Stock Distribution by Value</h2>
+      <canvas id="valuePie"></canvas>
+    </div>
+    <div class="chart-section">
+      <h2>Buy/Sell Timeline</h2>
+      <canvas id="timeSeriesChart"></canvas>
+    </div>
+  </main>
+  <script src="js/common.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
