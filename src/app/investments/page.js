@@ -15,9 +15,8 @@ export default function InvestmentsPage() {
   const [chartData, setChartData] = useState([]);
   const [ownedStocks, setOwnedStocks] = useState([]);
   const [buyUnits, setBuyUnits] = useState(0);
-  const BACKEND_URL = "http://localhost:3000";
+  const [sellUnits, setSellUnits] = useState(0);
 
-  console.log("API_KEY", process);
   useEffect(() => { loadOwnedStocks(); }, []);
   useEffect(() => {
     if (!selectedStock) return;
@@ -25,10 +24,10 @@ export default function InvestmentsPage() {
   }, [selectedStock]);
 
   async function loadOwnedStocks() {
-    const stocks = await fetchJSON(`${BACKEND_URL}/api/owned`);
-    let ownedStocks=stocks.json();
+    const stocks = await fetchJSON(`/api/owned`);
+    let ownedStocks = stocks;
     console.log("Owned stocks:", ownedStocks);
-    setOwnedownedStocks(stocks);
+    setOwnedStocks(ownedStocks);
   }
 
   async function searchStock() {
@@ -69,12 +68,12 @@ export default function InvestmentsPage() {
     alert("Purchase successful!");
   }
 
-  async function sellStock(symbol, ownedUnits, sellUnits) {
+  async function sellStock(symbol, ownedUnits, pricePerUnit, sellUnits) {
     if (sellUnits > ownedUnits) return alert("Cannot sell more than owned");
-    await fetchJSON(`${BACKEND_URL}/api/sell`, {
+    await fetchJSON(`/api/sell`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ stock: symbol, units: sellUnits })
+      body: JSON.stringify({  companyName:symbol, units:sellUnits, price:pricePerUnit, type: 'sell' })
     });
     alert("Sold successfully!");
     loadOwnedStocks();
@@ -114,16 +113,56 @@ export default function InvestmentsPage() {
       )}
 
       {tab === 'sell' && (
-        <div>
-          {ownedStocks.map(stock => (
-            <div key={stock.symbol}>
-              <strong>{stock.symbol}</strong> Owned: {stock.units}
-              <input type="number" id={`sell-${stock.symbol}`} placeholder="Units to sell" />
-              <button onClick={() => sellStock(stock.symbol, stock.units, Number(document.getElementById(`sell-${stock.symbol}`).value))}>Sell</button>
-            </div>
-          ))}
-        </div>
+        <div style={{
+            display: 'grid',
+            gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
+            gap: '10px',
+            fontWeight: 'bold',
+            borderBottom: '2px solid #ccc',
+            padding: '8px 0'
+        }}>
+            <div>Name</div>
+            <div>Symbol</div>
+            <div>Units</div>
+            <div>Current Price</div>
+      <div>Action</div>
+
+    {ownedStocks.map(stock => (
+      <div
+          key={stock.company_name}
+          style={{
+              display: 'grid',
+              gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
+              gap: '10px',
+              padding: '8px 0',
+              borderBottom: '1px solid #eee',
+              alignItems: 'center'
+          }}
+      >
+          <div>{stock.full_company_name}</div>
+          <div>{stock.company_name}</div>
+          <div>{stock.total_units}</div>
+          <div>${stock.price_per_unit?.toFixed(2)}</div>
+          <div style={{ display: 'flex', gap: '5px' }}>
+              <input
+                  type="number"
+                  min="1"
+                  max={stock.total_units}
+                  onChange={(e) => setSellUnits(Number(e.target.value))}
+                  placeholder="Units"
+                  style={{ width: '60px' }}
+              />
+              <button
+                  onClick={() =>
+                      sellStock(stock.company_name, stock.total_units, stock.price_per_unit, sellUnits)
+                  }
+              >
+                  Sell
+              </button>
+          </div>
+      </div>
+    ))}
+      </div>
       )}
-    </div>
-  );
-}
+  </div>
+  );}

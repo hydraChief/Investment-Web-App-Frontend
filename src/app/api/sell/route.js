@@ -1,10 +1,10 @@
 export async function POST(req) {
     try {
         let bData = await req.json();
-        console.log("Buying stock:", bData);
-      const addInvestmentURL = `${process.env.BACKEND_URL}/api/investments/squareOff`;
-        console.log("Adding investment", addInvestmentURL);
-      const res = await fetch(addInvestmentURL, {
+        console.log("selling stock:", bData);
+      const sellInvestmentURL = `${process.env.BACKEND_URL}/api/investments/squareOff`;
+        console.log("selling investment", sellInvestmentURL);
+      const res = await fetch(sellInvestmentURL, {
         headers: {
             'User-Agent': 'Mozilla/5.0',
             "Content-Type": "application/json",
