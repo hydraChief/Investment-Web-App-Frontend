@@ -8,7 +8,6 @@ export default function StockSearch(props) {
 
   const containerRef = useRef(null);
 
-  // Hide list when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
@@ -18,7 +17,6 @@ export default function StockSearch(props) {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-  // Watch search input with debounce
   useEffect(() => {
     if (!search.trim()) {
       setResults([]);
@@ -42,7 +40,7 @@ export default function StockSearch(props) {
       } catch (err) {
         console.error(err);
       }
-    }, 500); // 500ms debounce
+    }, 500); 
 
     return () => clearTimeout(debounceRef.current);
   }, [search]);

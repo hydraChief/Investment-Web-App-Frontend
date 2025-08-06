@@ -1,4 +1,3 @@
-// src/app/api/bonds/search/route.js
 import yahooFinance from 'yahoo-finance2';
 
 export async function GET(req) {
@@ -13,10 +12,8 @@ export async function GET(req) {
       );
     }
 
-    // Search Yahoo Finance for bonds
     const results = await yahooFinance.search(query, { quotesCount: 10, newsCount: 0 });
 
-    // Filter for relevant bond types
     let bonds = results.quotes.filter(q =>
       q.quoteType === 'BOND' || q.quoteType === 'ETF' || q.quoteType === 'MUTUALFUND'
     ).map(q => ({
@@ -30,7 +27,6 @@ export async function GET(req) {
       return new Response(JSON.stringify({ error: 'No bonds found' }), { status: 404 });
     }
 
-    // Fetch current prices in parallel
     const bondsWithPrices = await Promise.all(
       bonds.map(async bond => {
         try {

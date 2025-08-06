@@ -14,7 +14,6 @@ import { Line, Bar } from "react-chartjs-2";
 import { TreemapController, TreemapElement } from "chartjs-chart-treemap";
 import { Chart } from "react-chartjs-2";
 
-// Register chart types
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -28,15 +27,26 @@ ChartJS.register(
   TreemapElement
 );
 
-export default function PortfolioCharts({ data }) {
+export default function PortfolioCharts({ data,type='stocks' }) {
   const labels = [...new Set(data.map(d =>
     new Date(d.transaction_date).toLocaleDateString()
   ))];
 
-  const companies = [...new Set(data.map(d => d.company_name))];
+  let companies = [...new Set(data.map(d => d.company_name))];
+  if(type === 'bonds') {
+    companies = [...new Set(data.map(d => d.bond_name))];
+  }
+  else if (type === 'precious_metals') {
+    companies = [...new Set(data.map(d => d.metal_name))];
+  }
 
   const lineDatasets = companies.flatMap(company => {
-    const companyData = data.filter(d => d.company_name === company);
+    let companyData = data.filter(d => d.company_name === company);
+    if(type === 'bonds') {
+      companyData = data.filter(d => d.bond_name === company);
+    } else if (type === 'precious_metals') {
+      companyData = data.filter(d => d.metal_name === company);
+    }
     return [
       {
         label: `${company} Buy Units`,
@@ -68,7 +78,12 @@ export default function PortfolioCharts({ data }) {
   });
 
   const barDatasets = companies.flatMap(company => {
-    const companyData = data.filter(d => d.company_name === company);
+    let companyData = data.filter(d => d.company_name === company);
+    if(type === 'bonds') {
+      companyData = data.filter(d => d.bond_name === company);
+    } else if (type === 'precious_metals') {
+      companyData = data.filter(d => d.metal_name === company);
+    }
     return [
       {
         label: `${company} Buy Amount`,
@@ -93,38 +108,48 @@ export default function PortfolioCharts({ data }) {
     ];
   });
 
-  // Prepare Treemap data
-  const treemapData = companies.map(company => {
-    const totalAmount = data
-      .filter(d => d.company_name === company)
-      .reduce((sum, row) => sum + Number(row.total_amount), 0);
-    return { company, totalAmount };
-  });
+let treemapData = companies.map(company => {
+  let totalAmount = data
+    .filter(d => {
+      const nameField =
+        type === 'bonds' ? d.bond_name :
+        type === 'precious_metals' ? d.metal_name :
+        d.company_name;
 
-  const treemapChartData = {
-    datasets: [{
-      tree: treemapData.map(item => ({ x: item.company, v: item.totalAmount })),
-      key: 'v',
-      groups: ['x'],
-      backgroundColor(ctx) {
-        const colors = [
-          'rgba(173, 216, 230, 0.7)',
-          'rgba(144, 238, 144, 0.7)',
-          'rgba(255, 182, 193, 0.7)',
-          'rgba(255, 255, 224, 0.7)',
-          'rgba(221, 160, 221, 0.7)'
-        ];
-        return colors[ctx.index % colors.length];
-      },
-      labels: {
-        display: true,
-        formatter(ctx) {
-          const item = ctx.raw;
-          return `${item.x}\n$${item.v.toLocaleString()}`;
-        }
+      return nameField?.trim().toLowerCase() === company.trim().toLowerCase();
+    })
+    .reduce((sum, row) => {
+      const amt = parseFloat(row.total_amount.toString().replace(/,/g, '')) || 0;
+      return sum + (row.type?.toLowerCase() === 'sell' ? -amt : amt);
+    }, 0);
+
+  return { company, totalAmount };
+}).filter(item => item.totalAmount > 0);
+
+const treemapChartData = {
+  datasets: [{
+    tree: treemapData.map(item => ({ x: item.company, v: item.totalAmount })),
+    key: 'v',
+    groups: ['x'],
+    backgroundColor(ctx) {
+      const colors = [
+        'rgba(173, 216, 230, 0.7)',
+        'rgba(144, 238, 144, 0.7)',
+        'rgba(255, 182, 193, 0.7)',
+        'rgba(255, 255, 224, 0.7)',
+        'rgba(221, 160, 221, 0.7)'
+      ];
+      return colors[ctx.index % colors.length];
+    },
+    labels: {
+      display: true,
+      formatter(ctx) {
+        return `${ctx.raw.x}\n$${ctx.raw.v.toLocaleString()}`;
       }
-    }]
-  };
+    }
+  }]
+};
+
 
   const treemapOptions = {
     plugins: {

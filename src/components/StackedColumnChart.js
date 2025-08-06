@@ -4,12 +4,23 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-export default function StackedColumnChart({ data }) {
+export default function StackedColumnChart({ data,type='stocks' }) {
   const labels = [...new Set(data.map(d => new Date(d.transaction_date).toLocaleDateString()))];
-  const companies = [...new Set(data.map(d => d.company_name))];
+  let companies = [...new Set(data.map(d => d.company_name))];
+
+  if (type === 'bonds') {
+    companies = [...new Set(data.map(d => d.bond_name))];
+  } else if (type === 'precious_metals') {  
+    companies = [...new Set(data.map(d => d.metal_name))];
+  }
 
   const datasets = companies.flatMap(company => {
-    const companyData = data.filter(d => d.company_name === company);
+    let companyData = data.filter(d => d.company_name === company);
+    if (type === 'bonds') {
+      companyData = data.filter(d => d.bond_name === company);
+    } else if (type === 'precious_metals') {
+      companyData = data.filter(d => d.metal_name === company);
+    }
     return [
       {
         label: `${company} Buy`,

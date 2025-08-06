@@ -5,9 +5,8 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function PieChart({ labels, data }) {
-    // Generate random pastel colors for each label
     const colors = labels.map(() => {
-        const r = Math.floor(200 + Math.random() * 55); // 200–255
+        const r = Math.floor(200 + Math.random() * 55); 
         const g = Math.floor(200 + Math.random() * 55);
         const b = Math.floor(200 + Math.random() * 55);
         return `rgb(${r}, ${g}, ${b})`;

@@ -14,7 +14,7 @@ ChartJS.register(LinearScale, TimeScale, CandlestickController, CandlestickEleme
 export default function CandlestickChart({ data, label }) {
   const sortedData = data.map(d => ({
     ...d,
-    x: new Date(d.x) // ensure real Date object
+    x: new Date(d.x)
   })).sort((a, b) => a.x - b.x);
 
   return (

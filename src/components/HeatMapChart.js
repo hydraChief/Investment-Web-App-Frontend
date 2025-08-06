@@ -28,7 +28,6 @@ export default function HeatmapChart({ transactions }) {
     return <div>No data available</div>;
   }
 
-  // Get distinct sorted labels for axes
   const labelsX = [
     ...new Set(
       transactions.map(t =>
@@ -38,14 +37,12 @@ export default function HeatmapChart({ transactions }) {
   ];
   const labelsY = [...new Set(transactions.map(t => t.company_name))];
 
-  // Transform data into {x, y, v}
   const heatmapData = transactions.map(t => ({
     x: new Date(t.transaction_date).toLocaleDateString("en-GB"),
     y: t.company_name,
     v: Number(t.total_units) || 0
   }));
 
-  // Chart dataset
   const dataset = {
     label: "Units Activity",
     data: heatmapData,

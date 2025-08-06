@@ -1,4 +1,3 @@
-// app/api/stock/route.js
 export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const symbol = searchParams.get("symbol");
@@ -12,7 +11,7 @@ export async function GET(req) {
         console.log("Fetching data from Yahoo Finance:", yahooUrl);
       const res = await fetch(yahooUrl, {
         headers: {
-          'User-Agent': 'Mozilla/5.0', // helps avoid blocking
+          'User-Agent': 'Mozilla/5.0', 
         }
       });
   
