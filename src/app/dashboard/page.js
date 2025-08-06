@@ -1,7 +1,10 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { fetchJSON } from '@/lib/api';
+import { FaRegSadTear } from "react-icons/fa";
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import './dashboard.css'
 const PieChart = dynamic(() => import('@/components/PieChart'), { ssr: false });
 const PortfolioCharts = dynamic(() => import('@/components/PortfolioCharts'), { ssr: false });
 const BarChart = dynamic(() => import('@/components/BarChart'), { ssr: false });
@@ -15,7 +18,7 @@ export default function DashboardPage() {
   const [transactionsBonds, setTransactionsBonds] = useState([]);
   const [portfolioMetals, setPortfolioMetals] = useState([]);
   const [transactionsMetals, setTransactionsMetals] = useState([]);
-  const [dashboardData, setDashboardData] = useState('bonds');
+  const [dashboardData, setDashboardData] = useState('all');
   const [portfolioByName,setPortfolioByName]=useState([]);
   const [portfolioSummary, setPortfolioSummary] = useState({});
   const [stocksPortfolioSummary, setStocksPortfolioSummary] = useState({});
@@ -182,122 +185,201 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div>
-      
-      <button onClick={() => setDashboardData('all')}>Overview</button>
-      <button onClick={() => setDashboardData('bonds')}>Bonds</button>
-      <button onClick={() => setDashboardData('stocks')}>stocks</button>
-      <button onClick={() => setDashboardData('precious_metals')}>Precious Metals</button>
+    <div className='main-container'>
+      <div className='category-btns'>
+        <span className={'category-btn'+ (dashboardData=='all'?' active':'')} onClick={() => setDashboardData('all')}>Overview</span>
+        <span className={'category-btn'+ (dashboardData=='bonds'?' active':'')} onClick={() => setDashboardData('bonds')}>Bonds</span>
+        <span className={'category-btn'+ (dashboardData=='stocks'?' active':'')} onClick={() => setDashboardData('stocks')}>stocks</span>
+        <span className={'category-btn'+ (dashboardData=='precious_metals'?' active':'')} onClick={() => setDashboardData('precious_metals')}>Precious Metals</span>
+      </div>
       {/* stocks */}
-      {dashboardData=='stocks' && (
-        <>
-          <h2>Stock Distribution by Units</h2>
-          <PieChart labels={portfolioStocks.map(p => p.company_name +` (${p.full_company_name})`)} data={portfolioStocks.map(p => p.total_units)} />
-          <h2>Stock Distribution by Value</h2>
-          <div style={{ width: '100%', height: '100%' }}>
-            <BarChart labels={portfolioStocks.map(p => p.company_name +` (${p.full_company_name})`)} data={portfolioStocks.map(p => p.total_amount)} />
-            {/* <PieChart labels={portfolioStocks.map(p => p.company_name +` (${p.full_company_name})`)} data={portfolioStocks.map(p => p.total_amount)} /> */}
+      {dashboardData=='stocks' && (portfolioStocks.length>0?(
+        <div className='chart-main-container'>
+          <div className='value-container'>
+            <h2>Stock Distribution by Value</h2>
+            <div className='donut'>
               <DonutChart type='stocks' portfolio={portfolioStocks} />
+            </div>
           </div>
-
-          <h2>Buy/Sell Timeline</h2>
-          <div style={{ width: '100%', height: '100%' }}>
-            <StackedColumnChart data={transactionsStocks} />
-            <HeatmapChart data={transactionsStocks} />
-            <PortfolioCharts data={transactionsStocks} />
+          <div className='units-container'>
+            <h2>Stock Distribution by Units</h2>
+            <div className='piechart'>
+              <PieChart labels={portfolioStocks.map(p => p.company_name +` (${p.full_company_name})`)} data={portfolioStocks.map(p => p.total_units)} />
+            </div>
           </div>
-        </>
-      )}
+        
+          <div style={{height:'100%', width:'100%'}}>
+            <h2>Buy/Sell Timeline</h2>
+            <div className='stackedchart'>
+              <StackedColumnChart data={transactionsStocks} />
+            </div>
+            <div className='heatmapchart'>
+              <HeatmapChart data={transactionsStocks} />
+            </div>
+            <div className='portfoliochart'>
+              <PortfolioCharts data={transactionsStocks} />
+            </div>
+          </div>
+        </div>
+      ):(
+        <div className='sorry-container'>
+          <h2> <FaRegSadTear />No Stocks in portfolio</h2>
+          <h3>
+            Buy <Link href='/stocks'>Stocks</Link>
+          </h3>
+        </div>
+      ))}
       {/* bonds */}
-      {dashboardData=='bonds' && (
-        <>
-          <h2>Stock Distribution by Units</h2>
-          <PieChart labels={portfolioBonds.map(p => p.bond_name +` (${p.bond_symbol})`)} data={portfolioBonds.map(p => p.units_remaining)} />
-          <h2>Stock Distribution by Value</h2>
-          <div style={{ width: '100%', height: '100%' }}>
-            <BarChart labels={portfolioBonds.map(p => p.bond_name +` (${p.bond_symbol})`)} data={portfolioBonds.map(p => p.total_amount)} />
-            {/* <PieChart labels={portfolioBonds.map(p => p.bond_name +` (${p.bond_symbol})`)} data={portfolioBonds.map(p => p.total_amount)} /> */}
+      {dashboardData=='bonds' && (portfolioBonds.length>0? (
+        <div className='chart-main-container'>
+          <div className='value-container'>
+            <h2>Stock Distribution by Value</h2>
+            <div className='donut'>
               <DonutChart type='bonds' portfolio={portfolioBonds} />
+            </div>
+          </div>
+          <div className='units-container'>  
+            <h2>Stock Distribution by Units</h2>
+            <div className='piechart'>
+              <PieChart labels={portfolioBonds.map(p => p.bond_name +` (${p.bond_symbol})`)} data={portfolioBonds.map(p => p.units_remaining)} />
+            </div>
           </div>
 
-          <h2>Buy/Sell Timeline</h2>
-          <div style={{ width: '100%', height: '100%' }}>
-            <StackedColumnChart type='bonds' data={transactionsBonds} />
-            <HeatmapChart type='bonds' data={transactionsBonds} />
-            <PortfolioCharts type='bonds' data={transactionsBonds} />
+          <div style={{height:'100%', width:'100%'}}>
+            <h2>Buy/Sell Timeline</h2>
+            <div className='stackedchart'>
+              <StackedColumnChart type='bonds' data={transactionsBonds} />
+            </div>
+            <div className='heatmap'>
+              <HeatmapChart type='bonds' data={transactionsBonds} />
+            </div>
+            <div className='portfoliochart'>
+              <PortfolioCharts type='bonds' data={transactionsBonds} />
+            </div>
           </div>
-        </>
-      )}
+        </div>
+      ):(
+        <div className='sorry-container'>
+          <h2> <FaRegSadTear /> No Bonds in your portfolio</h2>
+          <h3>
+            Buy <Link href='/bonds'>Bonds</Link>
+          </h3>
+        </div>
+      ))}
       {/* precious_metals */}
-      {dashboardData=='precious_metals' && (
-        <>
-         <h2>Stock Distribution by Units</h2>
-          <PieChart labels={portfolioMetals.map(p => p.metal_name +` (${p.metal_symbol})`)} data={portfolioMetals.map(p => p.units_remaining)} />
-          <h2>Stock Distribution by Value</h2>
-          <div style={{ width: '100%', height: '100%' }}>
-            <BarChart labels={portfolioMetals.map(p => p.metal_name +` (${p.metal_symbol})`)} data={portfolioMetals.map(p => p.total_amount)} />
-            {/* <PieChart labels={portfolioMetals.map(p => p.metal_name +` (${p.metal_symbol})`)} data={portfolioMetals.map(p => p.total_amount)} /> */}
-              <DonutChart portfolio={portfolioMetals} />
+      {dashboardData=='precious_metals' && (portfolioMetals.length>0?(
+        <div className='chart-main-container'>
+          <div className='value-container'>
+            <h2>Stock Distribution by Value</h2>
+            <div className='donut'>
+              <DonutChart type='precious_metals' portfolio={portfolioMetals} />
+            </div>
+          </div>
+          <div className='units-container'>
+            <h2>Precious Metals Distribution by Units (10gm)</h2>
+            <div className='piechart'>
+              <PieChart labels={portfolioMetals.map(p => p.metal_name +` (${p.metal_symbol})`)} data={portfolioMetals.map(p => p.units_remaining)} />
+            </div>
           </div>
 
-          <h2>Buy/Sell Timeline</h2>
           <div style={{ width: '100%', height: '100%' }}>
-            <StackedColumnChart type='precious_metals' data={transactionsMetals} />
-            <HeatmapChart type='precious_metals' data={transactionsMetals} />
-            <PortfolioCharts type='precious_metals' data={transactionsMetals} />
+            <h2>Buy/Sell Timeline</h2>
+            <div className='stackedchart'>
+              <StackedColumnChart type='precious_metals' data={transactionsMetals} />
+            </div>
+            <div className='heatmap'>
+              <HeatmapChart type='precious_metals' data={transactionsMetals} />
+            </div>
+            <div className='portfoliochart'>
+              <PortfolioCharts type='precious_metals' data={transactionsMetals} />
+            </div>
           </div>
-        </>
-      )}
+        </div>
+      ):(
+        <div className='sorry-container'>
+          <h2> <FaRegSadTear /> No Precious Metals in your portfolio</h2>
+          <h3>
+            Buy <Link href='/metals'>Precious Metals</Link>
+          </h3>
+        </div>
+      ))}
       {/* all */}
-      {dashboardData=='all' && (
-          <>
-            <button onClick={() => setDashboardBy('name')}>By Name</button>
-            <button onClick={() => setDashboardBy('category')}>By Category</button>
-              <>
-                {(dashboardBy=='name' && (
-                  <>
-                    <h2>Portfolio Distribution by Name</h2>
-                    <PieChart labels={portfolioByName.map(p => p.name )} data={portfolioByName.map(p => p.total_units)} />
+      {dashboardData=='all' && (portfolioByName.length>0?(
+          <div className='chart-main-container'>
+            <div className='dashboardby'>
+              <div onClick={() => setDashboardBy('name')}> <span className={'dashboardby-radio'+ (dashboardBy=='name'?' radio-active':'')}></span>By Name</div>
+              <div onClick={() => setDashboardBy('category')}><span className={'dashboardby-radio'+ (dashboardBy=='category'?' radio-active':'')}></span>By Category</div>
+            </div>
+            <>
+              {(dashboardBy=='name' && (
+                <>
+                  <div className='value-container'>
                     <h2>Portfolio Distribution by Value</h2>
-                    <div style={{ width: '100%', height: '100%' }}>
-                      <BarChart labels={portfolioByName.map(p => p.name )} data={portfolioByName.map(p => p.total_amount)} />
-                      {/* <PieChart labels={portfolioByName.map(p => p.name )} data={portfolioByName.map(p => p.total_amount)} /> */}
-                        <DonutChart type='allByName' portfolio={portfolioByName} />
+                    <div className='donut'>
+                      <DonutChart type='allByName' portfolio={portfolioByName} />
                     </div>
-          
+                  </div>
+                  <div className='units-container'>
+                    <h2>Portfolio Distribution by Name</h2>
+                    <div className='piechart'>
+                      <PieChart labels={portfolioByName.map(p => p.name )} data={portfolioByName.map(p => p.total_units)} />
+                    </div>
+                  </div>
+        
+                  <div style={{ width: '100%', height: '100%' }}>
                     <h2>Buy/Sell Timeline</h2>
-                    <div style={{ width: '100%', height: '100%' }}>
+                    <div className='stackedchart'>
                       <StackedColumnChart type='allByName' data={transactionsByName} />
+                    </div>
+                    <div className='heatmap'>
                       <HeatmapChart type='allByName' data={transactionsByName} />
+                    </div>
+                    <div className='portfoliochart'>
                       <PortfolioCharts type='allByName' data={transactionsByName} />
                     </div>
-                  </>
-                ))}
+                  </div>
+                </>
+              ))}
             </>
 
             <>
               { (dashboardBy=='category' && (
                   <>
-                    <h2>Stock Distribution by Units</h2>
-                    <PieChart labels={portfolioByCategory.map(p => p.name)} data={portfolioByCategory.map(p => p.total_units)} />
-                    <h2>Stock Distribution by Value</h2>
-                    <div style={{ width: '100%', height: '100%' }}>
-                      <BarChart labels={portfolioByCategory.map(p => p.name)} data={portfolioByCategory.map(p => p.total_amount)} />
-                      {/* <PieChart labels={portfolioByCategory.map(p => p.name)} data={portfolioByCategory.map(p => p.total_amount)} /> */}
-                        <DonutChart type='allByCategory' portfolio={portfolioByCategory} />
+                  <div className='value-container'>
+                    <h2>Portfolio Distribution by Value</h2>
+                    <div className='donut'>
+                      <DonutChart type='allByName' portfolio={portfolioByCategory} />
                     </div>
-          
+                  </div>
+                  <div className='units-container'>
+                    <h2>Portfolio Distribution by Name</h2>
+                    <div className='piechart'>
+                      <PieChart labels={portfolioByCategory.map(p => p.name )} data={portfolioByCategory.map(p => p.total_units)} />
+                    </div>
+                  </div>
+        
+                  <div style={{ width: '100%', height: '100%' }}>
                     <h2>Buy/Sell Timeline</h2>
-                    <div style={{ width: '100%', height: '100%' }}>
-                      <StackedColumnChart type='allByCategory' data={transactionsByCategory} />
-                      <HeatmapChart type='allByCategory' data={transactionsByCategory} />
-                      <PortfolioCharts type='allByCategory' data={transactionsByCategory} />
+                    <div className='stackedchart'>
+                      <StackedColumnChart type='allByName' data={transactionsByCategory} />
                     </div>
-                  </>
+                    <div className='heatmap'>
+                      <HeatmapChart type='allByName' data={transactionsByCategory} />
+                    </div>
+                    <div className='portfoliochart'>
+                      <PortfolioCharts type='allByName' data={transactionsByCategory} />
+                    </div>
+                  </div>
+                </>
                 ))}
             </>
-          </>
-      )}
+          </div>
+      ):(
+        <div className='sorry-container'>
+          <h2> <FaRegSadTear /> You have nothing in your portfolio, please buy!!
+          </h2>
+        </div>
+      ))}
     </div>
   );
 }

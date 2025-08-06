@@ -1,0 +1,11 @@
+.main-container{
+    text-align: center;
+    padding: 2rem;
+    position: relative;
+}
+
+.btn{
+    height: 80px;
+    background-color: aqua;
+    width: 80px;
+}

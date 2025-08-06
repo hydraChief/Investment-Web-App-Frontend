@@ -18,3 +18,20 @@ body {
 .btn.secondary {
   background: #3498db;
 }
+
+.header{
+  background: #2a3f54;
+  padding: 1rem;
+  color: white;
+  text-align: center;
+}
+
+.header-heading {
+  color: white;
+  text-decoration: none;
+}
+
+.main{ 
+  display: flex;
+  position: relative;
+}

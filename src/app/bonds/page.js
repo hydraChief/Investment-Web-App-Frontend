@@ -75,14 +75,15 @@ export default function BondsPage() {
       {/* Buy Tab */}
       {tab === 'buy' && (
         <div>
-          {categories.map(cat => (
-            <button key={cat.name} onClick={() => setSelectedBondType(cat.query)} style={{ margin: '0 5px' }}>
-              {cat.name}
-            </button>
-          ))}
-
-            <input type="number" value={buyUnits} onChange={e => setBuyUnits(Number(e.target.value))} placeholder="Units" />
-            <button onClick={() => buyBond(selectedBuyBond.shortName, selectedBuyBond.symbol, selectedBuyBond.price, buyUnits)}>Buy</button>
+          <div>
+            {categories.map(cat => (
+              <button key={cat.name} onClick={() => setSelectedBondType(cat.query)} style={{ margin: '0 5px' }}>
+                {cat.name}
+              </button>
+            ))}
+          </div>
+          <input type="number" value={buyUnits} onChange={e => setBuyUnits(Number(e.target.value))} placeholder="Units" />
+          <button onClick={() => buyBond(selectedBuyBond.shortName, selectedBuyBond.symbol, selectedBuyBond.price, buyUnits)}>Buy</button>
           <div style={{
             display: 'grid',
             gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
@@ -95,7 +96,6 @@ export default function BondsPage() {
             <div>Symbol</div>
             <div>Type</div>
             <div>Current Price</div>
-            <div>Action</div>
           </div>
 
           {searchedBond.map(bond => (
@@ -111,12 +111,10 @@ export default function BondsPage() {
               }}
               onClick={() => setSelectedBuyBond(bond)}
             >
-              <div>{bond.shortName}</div>
-              <div>{bond.symbol}</div>
-              <div>{bond.type}</div>
-              <div>${bond.price?.toFixed(2)}</div>
-              <div style={{ display: 'flex', gap: '5px' }}>
-              </div>
+              <div key={bond.bond_name+'1'}>{bond.shortName}</div>
+              <div key={bond.bond_name+'2'}>{bond.symbol}</div>
+              <div key={bond.bond_name+'3'}>{bond.type}</div>
+              <div key={bond.bond_name +'4'}>${bond.price?.toFixed(2)}</div>
             </div>
           ))}
         </div>
@@ -148,12 +146,11 @@ export default function BondsPage() {
             <div>Symbol</div>
             <div>Units</div>
             <div>Current Price</div>
-            <div>Action</div>
           </div>
 
           {ownedBonds.map(bond => (
             <div
-              key={bond.bond_name}
+              key={bond.bond_symbol}
               style={{
                 display: 'grid',
                 gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr',
@@ -164,12 +161,10 @@ export default function BondsPage() {
               }}
               onClick={() => setSelectedSellBond(bond)}
             >
-              <div>{bond.bond_name}</div>
-              <div>{bond.bond_symbol}</div>
-              <div>{bond.units_remaining}</div>
-              <div>${bond.current_price?.toFixed(2)}</div>
-              <div style={{ display: 'flex', gap: '5px' }}>
-              </div>
+              <div key={bond.bond_name+'1'}>{bond.bond_name}</div>
+              <div key={bond.bond_name+'2'}>{bond.bond_symbol}</div>
+              <div key={bond.bond_name+'3'}>{bond.units_remaining}</div>
+              <div key={bond.bond_name+'4'}>${bond.current_price?.toFixed(2)}</div>
             </div>
           ))}
         </div>

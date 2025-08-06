@@ -3,14 +3,24 @@ export const metadata = {
   description: 'Track and manage your investments',
 };
 
+import Link from 'next/link';
+import './globals.css';
+import Sidebar from '@/components/sidebar/Sidebar';
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <header style={{ background: '#2a3f54', padding: '1rem', color: 'white', textAlign: 'center' }}>
-          <h1>Investment Portfolio</h1>
+        <header className='header'>
+          <h1><Link className="header-heading" href="/">Investment Portfolio</Link></h1>
         </header>
-        <main style={{ padding: '1rem' }}>{children}</main>
+        <main className='main'>
+          <>
+            <Sidebar />
+            <div style={{height:'100%', width:'100%',flexGrow:1}}>
+              {children}
+            </div>
+          </>
+        </main>
       </body>
     </html>
   );
