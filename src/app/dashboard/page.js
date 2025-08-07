@@ -7,7 +7,6 @@ const PieChart = dynamic(() => import('@/components/PieChart'), { ssr: false });
 const PortfolioCharts = dynamic(() => import('@/components/PortfolioCharts'), { ssr: false });
 const BarChart = dynamic(() => import('@/components/BarChart'), { ssr: false });
 const StackedColumnChart = dynamic(() => import('@/components/StackedColumnChart'), { ssr: false });
-const HeatmapChart = dynamic(() => import('@/components/HeatMapChart'), { ssr: false });
 const DonutChart = dynamic(() => import('@/components/DonutChart'), { ssr: false });
 
 export default function DashboardPage() {
@@ -106,8 +105,9 @@ export default function DashboardPage() {
       const portfolioSummary = combinedPortfolioByName.reduce((acc, item) => {
         acc.total_amount += item.total_amount;
         acc.previous_total_amount += item.previous_total_amount;
+        acc.total_units += item.total_units;
         return acc;
-      }, { name: 'All', total_amount: 0, previous_total_amount: 0 });
+      }, { name: 'All', total_amount: 0, previous_total_amount: 0, total_units: 0 });
   
       const stocksPortfolioSummary = stocksPortfolio.reduce((acc, item) => {
         acc.total_amount += item.total_amount;
@@ -252,13 +252,7 @@ export default function DashboardPage() {
               {formatCurrency(portfolioSummary.total_amount || 0)}
             </div>
             <div className="metric-label">Total Portfolio Value</div>
-            {portfolioSummary.previous_total_amount && (
-              <div className={`metric-change ${calculateChange(portfolioSummary.total_amount, portfolioSummary.previous_total_amount).value >= 0 ? 'positive' : 'negative'}`}>
-                {calculateChange(portfolioSummary.total_amount, portfolioSummary.previous_total_amount).value >= 0 ? '↗' : '↘'}
-                {formatCurrency(Math.abs(calculateChange(portfolioSummary.total_amount, portfolioSummary.previous_total_amount).value))}
-                ({calculateChange(portfolioSummary.total_amount, portfolioSummary.previous_total_amount).percentage.toFixed(2)}%)
-              </div>
-            )}
+            
           </div>
 
           <div className="metric-card">
@@ -390,15 +384,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Additional Charts */}
-      <div className="grid grid-cols-2" style={{ marginTop: '2rem' }}>
-        <div className="chart-container">
-          <h3 style={{ marginBottom: '1rem', color: '#4a5568' }}>Portfolio Heatmap</h3>
-          {dashboardData === 'stocks' && <HeatmapChart data={transactionsStocks} />}
-          {dashboardData === 'bonds' && <HeatmapChart type='bonds' data={transactionsBonds} />}
-          {dashboardData === 'precious_metals' && <HeatmapChart type='precious_metals' data={transactionsMetals} />}
-          {dashboardData === 'all' && dashboardBy === 'name' && <HeatmapChart type='allByName' data={transactionsByName} />}
-          {dashboardData === 'all' && dashboardBy === 'category' && <HeatmapChart type='allByCategory' data={transactionsByCategory} />}
-        </div>
+      <div className="grid grid-cols-1" style={{ marginTop: '2rem' }}>
         <div className="chart-container">
           <h3 style={{ marginBottom: '1rem', color: '#4a5568' }}>Performance Analysis</h3>
           {dashboardData === 'stocks' && <PortfolioCharts data={transactionsStocks} />}

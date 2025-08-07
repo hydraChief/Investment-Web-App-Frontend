@@ -39,7 +39,7 @@ export async function GET(req) {
                 full_company_name: priceInfo.fullName,
                 short_company_name: priceInfo.shortName,
                 previous_price: stock.price || 0,
-                previous_total_amount:stock.total_units,
+                previous_total_amount:stock.total_amount,
                 price_per_unit: priceInfo.price,
                 total_units: stock.units_remaining,
                 total_amount: stock.units_remaining * priceInfo.price
